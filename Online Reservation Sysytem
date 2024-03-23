@@ -1,0 +1,103 @@
+import java.util.*;
+
+// Define a Reservation class to hold reservation information
+class Reservation {
+    private String reservationId;
+    private String userId;
+    private String resourceId;
+    private Date startTime;
+    private Date endTime;
+
+    // Constructor
+    public Reservation(String reservationId, String userId, String resourceId, Date startTime, Date endTime) {
+        this.reservationId = reservationId;
+        this.userId = userId;
+        this.resourceId = resourceId;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    // Getters and Setters
+    public String getReservationId() {
+        return reservationId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getResourceId() {
+        return resourceId;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+}
+
+// Define a class to manage reservations
+class ReservationManager {
+    private List<Reservation> reservations;
+
+    // Constructor
+    public ReservationManager() {
+        this.reservations = new ArrayList<>();
+    }
+
+    // Method to make a reservation
+    public void makeReservation(String reservationId, String userId, String resourceId, Date startTime, Date endTime) {
+        Reservation reservation = new Reservation(reservationId, userId, resourceId, startTime, endTime);
+        reservations.add(reservation);
+        System.out.println("Reservation made successfully!");
+    }
+
+    // Method to cancel a reservation
+    public void cancelReservation(String reservationId) {
+        for (Reservation reservation : reservations) {
+            if (reservation.getReservationId().equals(reservationId)) {
+                reservations.remove(reservation);
+                System.out.println("Reservation canceled successfully!");
+                return;
+            }
+        }
+        System.out.println("Reservation not found!");
+    }
+
+    // Method to check availability of a resource within a time range
+    public boolean isResourceAvailable(String resourceId, Date startTime, Date endTime) {
+        for (Reservation reservation : reservations) {
+            if (reservation.getResourceId().equals(resourceId) &&
+                !(endTime.before(reservation.getStartTime()) || startTime.after(reservation.getEndTime()))) {
+                return false; // Resource is not available
+            }
+        }
+        return true; // Resource is available
+    }
+}
+
+// Main class to demonstrate the usage of ReservationManager
+public class Main {
+    public static void main(String[] args) {
+        // Sample usage
+        ReservationManager reservationManager = new ReservationManager();
+
+        // Sample reservation
+        Date startTime = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startTime);
+        calendar.add(Calendar.HOUR, 1); // Adding 1 hour to current time for end time
+        Date endTime = calendar.getTime();
+
+        reservationManager.makeReservation("12345", "user1", "resource1", startTime, endTime);
+
+        // Check availability
+        System.out.println("Is resource available? " + reservationManager.isResourceAvailable("resource1", startTime, endTime));
+
+        // Cancel reservation
+        reservationManager.cancelReservation("12345");
+    }
+}
