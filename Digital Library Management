@@ -1,0 +1,140 @@
+import java.util.*;
+
+class Book {
+    private String title;
+    private String author;
+    private String ISBN;
+    private boolean isAvailable;
+
+    public Book(String title, String author, String ISBN) {
+        this.title = title;
+        this.author = author;
+        this.ISBN = ISBN;
+        this.isAvailable = true;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getISBN() {
+        return ISBN;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
+}
+
+class User {
+    private String username;
+    private String password;
+    private List<Book> borrowedBooks;
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+        this.borrowedBooks = new ArrayList<>();
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public List<Book> getBorrowedBooks() {
+        return borrowedBooks;
+    }
+}
+
+class LibraryManager {
+    private List<Book> books;
+    private Map<User, List<Book>> userBooks;
+
+    public LibraryManager() {
+        this.books = new ArrayList<>();
+        this.userBooks = new HashMap<>();
+    }
+
+    public void addBook(Book book) {
+        books.add(book);
+    }
+
+    public void addUser(User user) {
+        userBooks.put(user, new ArrayList<>());
+    }
+
+    public void borrowBook(User user, Book book) {
+        if (!book.isAvailable()) {
+            System.out.println("Book is not available for borrowing.");
+            return;
+        }
+        userBooks.get(user).add(book);
+        book.setAvailable(false);
+        System.out.println("Book borrowed successfully.");
+    }
+
+    public void returnBook(User user, Book book) {
+        if (!userBooks.containsKey(user) || !userBooks.get(user).contains(book)) {
+            System.out.println("You have not borrowed this book.");
+            return;
+        }
+        userBooks.get(user).remove(book);
+        book.setAvailable(true);
+        System.out.println("Book returned successfully.");
+    }
+
+    public List<Book> searchBooks(String query) {
+        List<Book> result = new ArrayList<>();
+        for (Book book : books) {
+            if (book.getTitle().toLowerCase().contains(query.toLowerCase()) ||
+                    book.getAuthor().toLowerCase().contains(query.toLowerCase()) ||
+                    book.getISBN().toLowerCase().contains(query.toLowerCase())) {
+                result.add(book);
+            }
+        }
+        return result;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        LibraryManager libraryManager = new LibraryManager();
+
+        // Adding books to the library
+        Book book1 = new Book("The Great Gatsby", "F. Scott Fitzgerald", "9780743273565");
+        Book book2 = new Book("To Kill a Mockingbird", "Harper Lee", "9780061120084");
+        libraryManager.addBook(book1);
+        libraryManager.addBook(book2);
+
+        // Adding users
+        User user1 = new User("user1", "password123");
+        User user2 = new User("user2", "password456");
+        libraryManager.addUser(user1);
+        libraryManager.addUser(user2);
+
+        // Borrowing books
+        libraryManager.borrowBook(user1, book1);
+        libraryManager.borrowBook(user2, book2);
+
+        // Returning books
+        libraryManager.returnBook(user1, book1);
+
+        // Searching for books
+        List<Book> searchResult = libraryManager.searchBooks("gatsby");
+        for (Book book : searchResult) {
+            System.out.println("Title: " + book.getTitle() + ", Author: " + book.getAuthor() + ", ISBN: " + book.getISBN());
+        }
+    }
+}
